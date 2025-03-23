@@ -1,0 +1,10 @@
+Water,H2O
+Ammonia,NH3
+Carbon dioxide,CO2
+Propane,C3H8
+Ozone,O3
+Ethyl alcohol,C2H5OH
+Xenon difluoride,XeF2
+Amphetamine,C9H13N
+Talcum powder,Mg3Si4O102
+Pyrite,FeS2
