@@ -1,5 +1,3 @@
-#include <functional>
-#include <map>
 #include "Vankov_LR3-4_class_Molecule.cpp"
 
 using namespace std;
@@ -14,7 +12,9 @@ int main()
 {
     map<int, MenuItem> menu = {
         {1, {"Create molecule vector from file", AddMoleculesFromFile(filename)}},
-        {2, {"Show molecules vector", ShowMolecules}}
+        {2, {"Show molecules vector", ShowMolecules}},
+        {3, {"Add molecule to vector", AddMolecule}},
+        {4, {"Show molecular mass of eaach molecule", ShowMoleculesMass}}
     };
 
     int choice;

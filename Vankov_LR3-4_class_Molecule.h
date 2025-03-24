@@ -19,9 +19,9 @@ class Molecule
         Molecule(const string& name, const vector<string>& atoms) : name(name), atoms(atoms) {}
         Molecule(const Molecule& ob) : Molecule(ob.name, ob.atoms) {} 
 
+        static Molecule* CreateMolecule(); // Ввод данных о молекуле с консоли
         void Print(); // Вывод данных о молекуле
-        void CreateMolecule(); // Ввод данных о молекуле с консоли
-        void Mass();  // Подсчет молекулярной массы
+        int Mass();  // Подсчет молекулярной массы
  
         string* GetName() { return &name; }
         vector<string>* GetAtoms() { return &atoms; }
@@ -31,8 +31,5 @@ class Molecule
 
         ~Molecule() {}
 };
-
-// Глобальный вектор для хранения всех молекул
-vector<Molecule> molecules;
 
 #endif

@@ -10,18 +10,31 @@ void Molecule::Print()
     cout << name << ", " << molecule << endl;
 }
 
-void Molecule::CreateMolecule()
+Molecule* Molecule::CreateMolecule()
 {
-    Molecule ob;
+    Molecule *ob = new Molecule();
 
     string name, molecule;
     EnterString(name, "Enter molecule name: ");
     EnterString(molecule, "Enter molecule formula: ");
     
-    ob.name = name;
-    ob.atoms = SplitMolecule(molecule);
+    ob->name = name;
+    ob->atoms = SplitMolecule(molecule);
 
-    molecules.push_back(ob);
+    return ob;
+}
+
+int Molecule::Mass()
+{
+    int mass = 0;
+
+    for (auto atom : atoms)
+    {
+        if (table.find(atom) != table.end())
+            mass += table[atom];
+    }
+
+    return mass;
 }
 
 #endif
