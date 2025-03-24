@@ -1,6 +1,6 @@
 #include <functional>
 #include <map>
-#include "Vankov_LR3-4_Methods.h"
+#include "Vankov_LR3-4_class_Molecule.cpp"
 
 using namespace std;
 
@@ -38,6 +38,8 @@ int main()
 
         if (menu.find(choice) != menu.end())
             menu[choice].func();
+
+        cout << endl;
     }
 
     return 0;

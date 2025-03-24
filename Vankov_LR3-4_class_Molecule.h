@@ -20,6 +20,7 @@ class Molecule
         Molecule(const Molecule& ob) : Molecule(ob.name, ob.atoms) {} 
 
         void Print(); // Вывод данных о молекуле
+        void CreateMolecule(); // Ввод данных о молекуле с консоли
         void Mass();  // Подсчет молекулярной массы
  
         string* GetName() { return &name; }

@@ -5,7 +5,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "Vankov_LR3-4_class_Molecule.cpp"
+#include "Vankov_LR3-4_class_Molecule.h"
 
 using namespace std;
 
@@ -135,6 +135,32 @@ function<void()> AddMoleculesFromFile(string& filename)
             cerr << "Something went wrong" << endl;
         }
     };
+}
+
+// Конвертировать вектор атомов в читаемую строку ( {"Mg", "Mg", "O"} => Mg2O )
+string AtomsVectorToString(vector<string> atoms)
+{
+    string molecule = atoms[0];
+    int num = 1;
+
+    for (auto atom = atoms.begin() + 1; atom != atoms.end(); atom++)
+    {
+        if (*(atom - 1) == *atom)
+        {
+            num++;
+            continue;
+        }
+
+        else if (*(atom - 1) != *atom && num > 1)
+        {
+            molecule += to_string(num);
+            num = 1;
+        }           
+        
+        molecule += *atom;
+    }
+
+    return molecule;
 }
 
 // Показать все молекулы в векторе молекул

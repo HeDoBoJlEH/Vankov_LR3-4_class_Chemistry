@@ -1,30 +1,27 @@
 #ifndef MOLECULE_CPP
 #define MOLECULE_CPP
 
-#include "Vankov_LR3-4_class_Molecule.h"
+#include "Vankov_LR3-4_Methods.h"
 
 void Molecule::Print()
 {
-    string molecule;
-    int num = 1;
-
-    for (auto iterator = atoms.begin(); iterator != atoms.end(); iterator++)
-    {
-        if (iterator != atoms.begin() && *(iterator - 1) == *iterator)
-            num++;
-
-        else if (iterator != atoms.begin() && *(iterator - 1) != *iterator && num > 1)
-        {
-            molecule += to_string(num);
-            num = 1;
-            molecule += *iterator;
-        }
-
-        else
-            molecule += *iterator;
-    }
+    string molecule = AtomsVectorToString(this->atoms);
 
     cout << name << ", " << molecule << endl;
+}
+
+void Molecule::CreateMolecule()
+{
+    Molecule ob;
+
+    string name, molecule;
+    EnterString(name, "Enter molecule name: ");
+    EnterString(molecule, "Enter molecule formula: ");
+    
+    ob.name = name;
+    ob.atoms = SplitMolecule(molecule);
+
+    molecules.push_back(ob);
 }
 
 #endif
