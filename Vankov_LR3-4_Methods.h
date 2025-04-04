@@ -10,6 +10,7 @@
 
 using namespace std;
 
+// Масса каждого атома
 map<string, int> table = {
     { "H", 1 },
     { "He", 4 },
@@ -131,12 +132,13 @@ map<string, int> table = {
     { "Og", 294 }
 };
 
-// Глобальный вектор для хранения всех молекул
+// Глобальный вектор для хранения всех существующих молекул
 vector<MoleculeCollection*> molecules;
 
+// Файл с исходной базой данных молекул { НАЗВАНИЕ,ФОРМУЛА }
 string filename = "molecules.txt";
 
-// Корректный ввод строки
+// Ожидание корректного ввода строки
 void EnterString(string& str, string message)
 {
     string input;
@@ -167,7 +169,7 @@ bool CanStoi(string input)
     return true;
 }
 
-// Корректный ввод числа
+// Ожидание корректного ввода числа
 void EnterNumber(int& num, string message)
 {
     string input;
@@ -190,7 +192,7 @@ inline bool IsUpper(const char& ch) { return ch >= 65 && ch <= 90; }
 inline bool IsLower(const char& ch) { return ch >= 97 && ch <= 122; }
 inline bool IsNum(const char& ch) { return ch >= 49 && ch <= 57; }
 
-// Конвертировать формулу в вектор атомов
+// Конвертировать формулу в вектор атомов Molecule::atoms ( Mg2O => {"Mg", "Mg", "O"} )
 vector<string> SplitMolecule(const string& formula)
 {
     vector<string> atoms;
@@ -227,7 +229,7 @@ vector<string> SplitMolecule(const string& formula)
     return atoms;
 }
 
-// Достать множитель из формулы
+// Достать множитель из формулы (3H2O => 3)
 int PopMultiplier(string& formula)
 {
     string mult = "";
@@ -241,7 +243,7 @@ int PopMultiplier(string& formula)
     return mult == "" ? 1 : stoi(mult);
 }
 
-// Запись молекул из файла в вектор молекул
+// Запись молекул из файла в вектор молекул (molecules)
 function<void()> AddMoleculesFromFile(string& filename)
 {
     return [filename]()
@@ -329,7 +331,7 @@ void ShowMoleculesMass()
         
 }
 
-// Добавить молекулу в вектор
+// Добавить молекулу в вектор molecules (Ввод с клавиатуры)
 void AddMolecule()
 {
     Molecule* ob = new Molecule;
@@ -345,7 +347,7 @@ void AddMolecule()
     cout << "Done." << endl;
 }
 
-// Получить ссылку на существующую молекулу
+// Попробовать получить ссылку на молекулу из вектора molecules. (True, если ссылка присвоена; False, если не найдена)
 bool GetMoleculeRef(MoleculeCollection*& ob, string& name)
 {
     for (auto molecule : molecules)
@@ -381,7 +383,7 @@ void GetRefsForOperation(MoleculeCollection*& ob1, MoleculeCollection*& ob2)
     } while (!GetMoleculeRef(ob2, molecule2));
 }
 
-// Сложить две молекулы
+// Сложить две молекулы и добавить результат в вектор molecules
 void SumMolecules()
 {
     MoleculeCollection* ob1;
@@ -397,7 +399,7 @@ void SumMolecules()
     cout << *mol << endl;
 }
 
-// Вычесть молекулу
+// Вычесть молекулу и добавить результат в molecules
 void MinusMolecules()
 {
     MoleculeCollection* ob1;
@@ -422,7 +424,7 @@ void MinusMolecules()
     }
 }
 
-// Выполнить операцию присваивания
+// Выполнить операцию присваивания 
 void AssignMolecules()
 {
     MoleculeCollection* ob1;
@@ -437,11 +439,13 @@ void AssignMolecules()
     cout << "\nDone." << endl;
 }
 
+// Функции для различных инкрементов/декрементов
 inline auto prefixIncrement = [](MoleculeCollection*& ob){ ++(*ob); };
 inline auto postfixIncrement = [](MoleculeCollection*& ob){ (*ob)++; };
 inline auto prefixDecrement = [](MoleculeCollection*& ob){ --(*ob); };
 inline auto postfixDecrement = [](MoleculeCollection*& ob){ (*ob)--; };
 
+// Выполнить операцию инкремента/декремента
 function<void()> Somecrement(function<void(MoleculeCollection*&)> func)
 {
     return [func]()
@@ -461,6 +465,7 @@ function<void()> Somecrement(function<void(MoleculeCollection*&)> func)
     };
 }
 
+// Выполнить операцию умножения и записать результат в вектор molecules
 void Multiply()
 {
     MoleculeCollection* ob;
@@ -483,12 +488,14 @@ void Multiply()
     cout << *mol;
 }
 
+// Функции для сравнения двух молекул
 inline auto bigger = [](MoleculeCollection*& ob1, MoleculeCollection*& ob2){ return *ob1 > *ob2; };
 inline auto lesser = [](MoleculeCollection*& ob1, MoleculeCollection*& ob2){ return *ob1 < *ob2; };
 inline auto biggerOrEqual = [](MoleculeCollection*& ob1, MoleculeCollection*& ob2){ return *ob1 >= *ob2; };
 inline auto lessOrEqual = [](MoleculeCollection*& ob1, MoleculeCollection*& ob2){ return *ob1 <= *ob2; };
 inline auto Equal = [](MoleculeCollection*& ob1, MoleculeCollection*& ob2){ return *ob1 == *ob2; };
 
+// Сравнить две молекулы по молекулярной массе
 function<void()> Comparision(function<bool(MoleculeCollection*&,MoleculeCollection*&)> func)
 {
     return [func]()
@@ -508,6 +515,7 @@ function<void()> Comparision(function<bool(MoleculeCollection*&,MoleculeCollecti
     };
 }
 
+// Получение по индексу простой молекулы из составной молекулы
 void Indexation()
 {
     MoleculeCollection* ob;

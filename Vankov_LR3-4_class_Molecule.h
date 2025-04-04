@@ -8,11 +8,12 @@
 
 using namespace std;
 
+// Класс обычной молекулы
 class Molecule
 {
     string name;           // Название молекулы
-    vector<string> atoms;  // Состав молекулы (атомы)
-    int multiplier {1};
+    vector<string> atoms;  // Атомарный состав молекулы (формула)
+    int multiplier {1};    // Множитель перед формулой
 
     public:
         Molecule() : name("") {}
@@ -20,9 +21,10 @@ class Molecule
         Molecule(const string& name, const vector<string>& atoms, const int multiplier) : Molecule(name, atoms) { this->multiplier = multiplier; }
         Molecule(const Molecule& ob) : Molecule(ob.name, ob.atoms, ob.multiplier) {} 
 
-        friend istream& operator>>(istream& is, Molecule& ob); // Ввод данных о молекуле с консоли
+        friend istream& operator>>(istream& is, Molecule& ob);
         friend ostream& operator<<(ostream &os, Molecule& ob);
-        int Mass();  // Подсчет молекулярной массы
+
+        int Mass(); 
  
         string* GetName() { return &name; }
         vector<string>* GetAtoms() { return &atoms; }
@@ -35,11 +37,12 @@ class Molecule
         ~Molecule() {}
 };
 
+// Класс составной молекулы (из простых)
 class MoleculeCollection
 {
-    string name;
-    vector<Molecule*> substance;
-    int multiplier {1};
+    string name;                   // Название
+    vector<Molecule*> substance;   // Из каких молекул состоит
+    int multiplier {1};            // Множитель перед формулой
 
     public:
         MoleculeCollection(Molecule* mol) : name( *mol->GetName() ) { substance.push_back(mol); }

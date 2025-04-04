@@ -3,6 +3,7 @@
 
 #include "Vankov_LR3-4_Methods.h"
 
+// Сложение молекул: { Water, H2O } + { Ozone, O3 } => { Water + Ozone, H2O + O3 }
 MoleculeCollection& MoleculeCollection::operator +(const MoleculeCollection& molecule2)
 {
     MoleculeCollection* molecule = new MoleculeCollection(*this);
@@ -27,16 +28,21 @@ MoleculeCollection& MoleculeCollection::operator +(const MoleculeCollection& mol
     return *molecule;
 }
 
+// Постфиксный инкремент увеличивает множитель на 1
 void MoleculeCollection::operator ++(int)
 {
     multiplier++;
 }
 
+// Префиксный инкремент увеличивает множитель на 1
 void MoleculeCollection::operator ++()
 {
     multiplier++;
 }
 
+// Вычитание молекул:
+// 1) { Water + Ozone, H2O + O3 } - { Water, H2O } = { Ozone, O3 }
+// 2) { Water, H2O } - { Ozone, O3 } = { Water, H2O }
 MoleculeCollection& MoleculeCollection::operator -(const MoleculeCollection& molecule2)
 {
     MoleculeCollection* molecule = new MoleculeCollection(*this);
@@ -104,16 +110,19 @@ MoleculeCollection& MoleculeCollection::operator -(const MoleculeCollection& mol
     return *molecule;
 }
 
+// Постфиксный декремент уменьшает множитель на 1
 void MoleculeCollection::operator --(int)
 {
     multiplier--;
 }
 
+// Префиксный декремент уменьшает множитель на 1
 void MoleculeCollection::operator --()
 {
     multiplier--;
 }
 
+// Умножение увеличивает множитель в mult раз
 MoleculeCollection& MoleculeCollection::operator *(const int mult)
 {
     MoleculeCollection* mol = new MoleculeCollection(*this);
@@ -123,6 +132,7 @@ MoleculeCollection& MoleculeCollection::operator *(const int mult)
     return *mol;
 }
 
+// Сравнение по молекулярной массе
 bool MoleculeCollection::operator >(MoleculeCollection& right)
 {
     return Mass() > right.Mass();
@@ -148,6 +158,7 @@ bool MoleculeCollection::operator ==(MoleculeCollection& right)
     return Mass() == right.Mass();
 }
 
+// Присваивание значений другой молекулы себе
 void MoleculeCollection::operator =(MoleculeCollection& refMol)
 {
     name = *refMol.GetName();
@@ -158,6 +169,7 @@ void MoleculeCollection::operator =(MoleculeCollection& refMol)
         substance.push_back(mol);
 }
 
+// По индексу возвращается простая молекула из составной молекулы, стоящая на заданном месте
 Molecule& MoleculeCollection::operator [](const int idx)
 {
     if (idx < substance.size())
@@ -170,6 +182,7 @@ Molecule& MoleculeCollection::operator [](const int idx)
     }
 }
 
+// Вывод молекулы в виде: {name}, {multiplier}({formula})
 ostream& operator<<(ostream& os, MoleculeCollection& ob)
 {
     if (ob.multiplier < 1) return os;
@@ -188,6 +201,7 @@ ostream& operator<<(ostream& os, MoleculeCollection& ob)
     return os << *ob.GetName() << ", " << formula;
 }
 
+// Ввод данных о молекуле с клавиатуры
 istream& operator>>(istream& is, Molecule& ob)
 {
     string name, formula;
@@ -201,6 +215,7 @@ istream& operator>>(istream& is, Molecule& ob)
     return is;
 }
 
+// Вывод данных о молекуле в виде: {name}, {multiplier}{formula}
 ostream& operator<<(ostream& os, Molecule& ob)
 {
     if (ob.multiplier < 1) return os;
@@ -210,6 +225,7 @@ ostream& operator<<(ostream& os, Molecule& ob)
     return os << *ob.GetName() << ", " << formula;
 }
 
+// Подсчет молекулярной массы
 int Molecule::Mass()
 {
     int mass = 0;
@@ -223,6 +239,7 @@ int Molecule::Mass()
     return mass * multiplier;
 }
 
+// ПОдсчет молекулярной массы
 int MoleculeCollection::Mass()
 {
     int mass = 0;

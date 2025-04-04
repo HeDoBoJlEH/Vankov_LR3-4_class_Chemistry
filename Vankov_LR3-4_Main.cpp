@@ -2,6 +2,7 @@
 
 using namespace std;
 
+// Пункт меню
 struct MenuItem
 {
     string title;
