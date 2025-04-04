@@ -27,14 +27,15 @@ int main()
         {14, {"Is first bigger or equal second?", Comparision(biggerOrEqual)}},
         {15, {"Is first less or equal second?", Comparision(lessOrEqual)}},
         {16, {"Is first equal second?", Comparision(Equal)}},
-        {17, {"Get simple molecule via index", Indexation}}
+        {17, {"Get simple molecule via index", Indexation}},
+        {18, {"Multiply molecule", Multiply}}
     };
 
     int choice;
 
     while (true)
     {
-        cout << "===== Menu =====" << endl;
+        cout << "======= Menu =======" << endl;
 
         for (auto item : menu)
         {
