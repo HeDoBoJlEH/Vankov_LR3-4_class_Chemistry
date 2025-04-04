@@ -13,6 +13,10 @@
         "xutility": "cpp",
         "sstream": "cpp",
         "functional": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "iosfwd": "cpp",
+        "iterator": "cpp",
+        "string": "cpp",
+        "iostream": "cpp"
     }
 }

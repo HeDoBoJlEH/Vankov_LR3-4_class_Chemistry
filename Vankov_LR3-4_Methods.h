@@ -132,7 +132,7 @@ map<string, int> table = {
 };
 
 // Глобальный вектор для хранения всех молекул
-vector<Molecule*> molecules;
+vector<MoleculeCollection*> molecules;
 
 string filename = "molecules.txt";
 
@@ -190,14 +190,14 @@ inline bool IsUpper(const char& ch) { return ch >= 65 && ch <= 90; }
 inline bool IsLower(const char& ch) { return ch >= 97 && ch <= 122; }
 inline bool IsNum(const char& ch) { return ch >= 49 && ch <= 57; }
 
-// Конвертировать строку в вектор атомов
-vector<string> SplitMolecule(const string& molecule)
+// Конвертировать формулу в вектор атомов
+vector<string> SplitMolecule(const string& formula)
 {
     vector<string> atoms;
 
     string atom;
 
-    for (const char& ch : molecule)
+    for (const char& ch : formula)
     {
         if (atom.empty() && IsUpper(ch)) atom += ch;
 
@@ -227,6 +227,20 @@ vector<string> SplitMolecule(const string& molecule)
     return atoms;
 }
 
+// Достать множитель из формулы
+int PopMultiplier(string& formula)
+{
+    string mult = "";
+    for (char ch : formula)
+    {
+        if (atoi(&ch)) mult += ch;
+        else if (ch == '0') mult += ch;
+        else break;
+    }
+
+    return mult == "" ? 1 : stoi(mult);
+}
+
 // Запись молекул из файла в вектор молекул
 function<void()> AddMoleculesFromFile(string& filename)
 {
@@ -244,15 +258,19 @@ function<void()> AddMoleculesFromFile(string& filename)
             {
                 stringstream ss(line);      
 
-                string name, molecule;
+                string name, formula;
+                int mult;
+
                 getline(ss, name, ',');
-                getline(ss, molecule);
+                getline(ss, formula);
 
-                vector<string> atoms = SplitMolecule(molecule);
+                vector<string> atoms = SplitMolecule(formula);
+                mult = PopMultiplier(formula);
 
-                Molecule* ob = new Molecule(name, atoms);
+                Molecule* ob = new Molecule(name, atoms, mult);
+                MoleculeCollection* molecule = new MoleculeCollection(ob);
 
-                molecules.push_back(ob);
+                molecules.push_back(molecule);
             }
 
             file.close();
@@ -267,12 +285,13 @@ function<void()> AddMoleculesFromFile(string& filename)
 }
 
 // Конвертировать вектор атомов в читаемую строку ( {"Mg", "Mg", "O"} => Mg2O )
-string AtomsVectorToString(vector<string> atoms)
+string AtomsVectorToString(Molecule& molecule)
 {
-    string molecule = atoms[0];
+    vector<string> *atoms = molecule.GetAtoms();
+    string str = (*atoms).at(0);
     int num = 1;
 
-    for (auto atom = atoms.begin() + 1; atom != atoms.end(); atom++)
+    for (auto atom = (*atoms).begin() + 1; atom != (*atoms).end(); atom++)
     {
         if (*(atom - 1) == *atom)
         {
@@ -282,39 +301,239 @@ string AtomsVectorToString(vector<string> atoms)
 
         else if (*(atom - 1) != *atom && num > 1)
         {
-            molecule += to_string(num);
+            str += to_string(num);
             num = 1;
-        }           
+        }              
         
-        molecule += *atom;
+        str += *atom;
     }
 
-    return molecule;
+    if (molecule.GetMultiplier() > 1) 
+        str = to_string(molecule.GetMultiplier()) + "(" + str + ")";
+
+    return str;
 }
 
 // Вычислить молекулярную массу каждой молекулы в векторе
 void ShowMoleculesMass()
 {
-    for (auto molecule : molecules)
+    int sumMass = 0;
+
+    for (auto mol : molecules)
     {
-        molecule->Print();
-        cout << "Mass: " << molecule->Mass() << endl << endl;
+        cout << *mol << '\n' << "Mass: " << (*mol).Mass() << endl;
+        sumMass += (*mol).Mass();
     }
+
+    cout << "\nMass of vector: " << sumMass << endl;
+        
 }
 
 // Добавить молекулу в вектор
 void AddMolecule()
 {
-    molecules.push_back(Molecule::CreateMolecule());
+    Molecule* ob = new Molecule;
+
+    cout << "Enter molecule name and formula: " << endl;
+    
+    cin >> *ob;
+
+    MoleculeCollection* obj = new MoleculeCollection(ob);
+
+    molecules.push_back(obj);
 
     cout << "Done." << endl;
+}
+
+// Получить ссылку на существующую молекулу
+bool GetMoleculeRef(MoleculeCollection*& ob, string& name)
+{
+    for (auto molecule : molecules)
+    {
+        if (*molecule->GetName() == name)
+        {
+            ob = molecule;
+
+            cout << "Find!" << endl;
+
+            return true;
+        }
+    }
+
+    cout << "Molecule doesn't exist." << endl;
+
+    return false;
+}
+
+// Получить две ссылки на молекулы для дальнейших операций
+void GetRefsForOperation(MoleculeCollection*& ob1, MoleculeCollection*& ob2)
+{
+    string molecule1, molecule2;
+
+    do
+    {
+        EnterString(molecule1, "Enter name of 1 molecule: ");
+    } while (!GetMoleculeRef(ob1, molecule1));
+
+    do
+    {
+        EnterString(molecule2, "Enter name of 2 molecule: ");
+    } while (!GetMoleculeRef(ob2, molecule2));
+}
+
+// Сложить две молекулы
+void SumMolecules()
+{
+    MoleculeCollection* ob1;
+    MoleculeCollection* ob2;
+
+    GetRefsForOperation(ob1, ob2);
+
+    MoleculeCollection* mol = new MoleculeCollection(*ob1 + *ob2);
+    
+    molecules.push_back(mol);
+
+    cout << "=== Result ===" << endl;
+    cout << *mol << endl;
+}
+
+// Вычесть молекулу
+void MinusMolecules()
+{
+    MoleculeCollection* ob1;
+    MoleculeCollection* ob2;
+
+    cout << "(Rule: new mol = mol1 - mol2)" << endl;
+
+    GetRefsForOperation(ob1, ob2);
+
+    MoleculeCollection* mol = new MoleculeCollection(*ob1 - *ob2);
+
+    if (mol->GetMultiplier() > 0)
+    {
+        molecules.push_back(mol);
+
+        cout << "=== Result ===" << endl;
+        cout << *mol << endl;
+    }
+    else
+    {
+        cout << "It's empty!" << endl;
+    }
+}
+
+// Выполнить операцию присваивания
+void AssignMolecules()
+{
+    MoleculeCollection* ob1;
+    MoleculeCollection* ob2;
+
+    cout << "(Rule: mol1 = mol2)" << endl;
+
+    GetRefsForOperation(ob1, ob2);
+
+    *ob1 = *ob2;
+
+    cout << "\nDone." << endl;
+}
+
+inline auto prefixIncrement = [](MoleculeCollection*& ob){ ++(*ob); };
+inline auto postfixIncrement = [](MoleculeCollection*& ob){ (*ob)++; };
+inline auto prefixDecrement = [](MoleculeCollection*& ob){ --(*ob); };
+inline auto postfixDecrement = [](MoleculeCollection*& ob){ (*ob)--; };
+
+function<void()> Somecrement(function<void(MoleculeCollection*&)> func)
+{
+    return [func]()
+    {
+        MoleculeCollection* ob;
+        string name;
+
+        do
+        {
+            EnterString(name, "Enter name of molecule: ");
+        }
+        while (!GetMoleculeRef(ob, name));
+
+        func(ob);
+
+        cout << "\nDone." << endl;
+    };
+}
+
+void Multiply()
+{
+    MoleculeCollection* ob;
+    string name;
+    int mult;
+
+    do
+    {
+        EnterString(name, "Enter name of molecule: ");
+    }
+    while (!GetMoleculeRef(ob, name));
+
+    EnterNumber(mult, "Enter multiplier: ");
+
+    MoleculeCollection* mol = &(*ob * mult);
+
+    molecules.push_back(mol);
+
+    cout << "=== Result ===" << endl;
+    cout << *mol;
+}
+
+inline auto bigger = [](MoleculeCollection*& ob1, MoleculeCollection*& ob2){ return *ob1 > *ob2; };
+inline auto lesser = [](MoleculeCollection*& ob1, MoleculeCollection*& ob2){ return *ob1 < *ob2; };
+inline auto biggerOrEqual = [](MoleculeCollection*& ob1, MoleculeCollection*& ob2){ return *ob1 >= *ob2; };
+inline auto lessOrEqual = [](MoleculeCollection*& ob1, MoleculeCollection*& ob2){ return *ob1 <= *ob2; };
+inline auto Equal = [](MoleculeCollection*& ob1, MoleculeCollection*& ob2){ return *ob1 == *ob2; };
+
+function<void()> Comparision(function<bool(MoleculeCollection*&,MoleculeCollection*&)> func)
+{
+    return [func]()
+    {
+        MoleculeCollection* ob1;
+        MoleculeCollection* ob2;
+
+        GetRefsForOperation(ob1, ob2);
+
+        cout << "Mass: " << ob1->Mass() << ", " << ob2->Mass() << endl;
+
+        if (func(ob1, ob2))
+            cout << "True." << endl;
+
+        else
+            cout << "False." << endl;
+    };
+}
+
+void Indexation()
+{
+    MoleculeCollection* ob;
+    string name;
+    int idx;
+
+    do
+    {
+        EnterString(name, "Enter molecule name: ");
+    }
+    while (!GetMoleculeRef(ob, name));
+
+    EnterNumber(idx, "Enter index of simple molecule: ");
+
+    if ((*(*ob)[idx].GetName()).empty())
+        cout << "Not correct index" << endl;
+    
+    else
+        cout << (*ob)[idx] << endl;
 }
 
 // Показать все молекулы в векторе молекул
 void ShowMolecules()
 {
     for (auto iterator = molecules.begin(); iterator != molecules.end(); iterator++)
-        (*iterator)->Print();
+        cout << **iterator << endl;
 }
 
 #endif

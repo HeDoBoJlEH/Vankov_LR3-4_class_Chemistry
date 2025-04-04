@@ -8,3 +8,5 @@ Xenon difluoride,XeF2
 Amphetamine,C9H13N
 Talcum powder,Mg3Si4O102
 Pyrite,FeS2
+Something1,2H2O
+Something2,3(H2O)
